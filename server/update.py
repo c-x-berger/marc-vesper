@@ -20,12 +20,8 @@ class Update():
     def update_resource(self):
         if (self.check_sig()):
             # signature checks out
-            # value should be a pickle-encoded dictionary
-            # something like {"domain": "radio.hype", "type": "AAAA", "value": "some:ipv6:addr::ffs0"}
-            try:
-                decoded_pickle = pickle.loads(self.value)
-            except pickle.PickleError:
-                print("Error un-pickling data!")
+            # value should be an IPv6 address
+            self.resource.value = self.value
         else:
             # it doesn't
             print("Passing due to signature error. No values have been updated.")
