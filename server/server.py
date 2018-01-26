@@ -28,7 +28,6 @@ class TCPHandler(socketserver.BaseRequestHandler):
             print("Malformed dict from {}!".format(self.client_address[0]))
         print("Decoded pickle into update object and resource object")
         resources[decoded[0]["label"]] = r.toDict()
-        print(resources)
 
 def main():
     print("Starting socketserver")
