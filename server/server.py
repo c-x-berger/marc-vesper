@@ -48,3 +48,5 @@ def main():
             r_server.server_close()
             exit(0)
 
+def start():
+    main() # server.start is more natural, this also allows us to make main() more complex
