@@ -2,11 +2,9 @@ import resource
 import update
 import pickle
 import socketserver, threading
+from threaded_tcp_server import ThreadedTCPServer
 
 resources = {}
-
-class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-    pass
 
 class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
@@ -28,6 +26,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
             print("Malformed dict from {}!".format(self.client_address[0]))
         print("Decoded pickle into update object and resource object")
         resources[decoded[0]["label"]] = r.toDict()
+        self.finish()
 
 def main():
     print("Starting socketserver")
@@ -35,7 +34,7 @@ def main():
         try:
             server_thread = threading.Thread(target=r_server.serve_forever)
             # Exit the server thread when the main thread terminates
-            # server_thread.daemon = True
+            server_thread.daemon = True
             server_thread.start()
             print("Server loop running in thread:", server_thread.name)
             while True:
@@ -44,3 +43,6 @@ def main():
             print("\nCaught Ctrl+C")
             print("Shutting down...")
             r_server.shutdown()
+            r_server.setDB(resources)
+            r_server.server_close()
+
