@@ -5,3 +5,6 @@ class Resource():
         self.key = key
         self.value = value
 
+    def toDict(self):
+        return {"key": self.key, "value": self.value, "serial_no": self.serial_no}
+
