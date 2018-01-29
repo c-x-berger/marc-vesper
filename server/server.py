@@ -25,6 +25,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
             # recieved malformed dict
             print("Malformed dict from {}!".format(self.client_address[0]))
         print("Decoded pickle into update object and resource object")
+        u.update_resource()
         resources[decoded[0]["label"]] = r.toDict()
         self.finish()
 
@@ -45,4 +46,5 @@ def main():
             r_server.shutdown()
             r_server.setDB(resources)
             r_server.server_close()
+            exit(0)
 

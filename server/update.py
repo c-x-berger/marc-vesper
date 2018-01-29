@@ -21,6 +21,7 @@ class Update():
         if (self.check_sig()):
             # signature checks out
             # value should be an IPv6 address
+            print("Signature checks out, updating resource.")
             self.resource.value = self.value
         else:
             # it doesn't
