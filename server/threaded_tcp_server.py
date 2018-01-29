@@ -5,7 +5,6 @@ import pickle
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
         self.database = None
-        super().__init__(server_address, RequestHandlerClass, bind_and_activate)
         print("Loading pickled database...")
         with open("data.pickle", 'r+b') as db:
             try:
@@ -19,6 +18,7 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                 print("Error unpickling data!")
             finally:
                 print("Finished loading {} from database.".format(self.database))
+        super().__init__(server_address, RequestHandlerClass, bind_and_activate)
 
     def setDB(self, data):
         self.database = data
