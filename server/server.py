@@ -28,9 +28,9 @@ class TCPHandler(socketserver.BaseRequestHandler):
         resources[decoded[0]["label"]] = r.toDict()
         self.finish()
 
-def main():
+def main(address):
     print("Starting socketserver")
-    with ThreadedTCPServer((str(sys.argv[1]), 9999), TCPHandler) as r_server:
+    with ThreadedTCPServer((address, 9999), TCPHandler) as r_server:
         try:
             server_thread = threading.Thread(target=r_server.serve_forever)
             # Exit the server thread when the main thread terminates
@@ -48,4 +48,7 @@ def main():
             exit(0)
 
 def start():
-    main() # server.start is more natural, this also allows us to make main() more complex
+    main(str(sys.argv[1])) # server.start is more natural, this also allows us to make main() more complex
+
+if __name__ == "__main__":
+    start()
