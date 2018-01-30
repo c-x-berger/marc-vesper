@@ -1,7 +1,6 @@
 import resource
 import update
-import pickle
-import socketserver, threading
+import socketserver, threading, sys, pickle
 from threaded_tcp_server import ThreadedTCPServer
 
 resources = {}
@@ -31,7 +30,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
 
 def main():
     print("Starting socketserver")
-    with ThreadedTCPServer(("localhost", 9999), TCPHandler) as r_server:
+    with ThreadedTCPServer((str(sys.argv[1]), 9999), TCPHandler) as r_server:
         try:
             server_thread = threading.Thread(target=r_server.serve_forever)
             # Exit the server thread when the main thread terminates
