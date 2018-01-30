@@ -1,4 +1,5 @@
 import pickle
+import sys
 import nacl.encoding
 import nacl.signing
 import datetime, socket
@@ -21,12 +22,13 @@ pickled_update = pickle.dumps(update[0])
 # Sign a message with the signing key
 signed = signing_key.sign(pickled_update)
 update[1] = signed
-print(update)
 
-HOST, PORT = "localhost", 9999
+HOST = str(sys.argv[1])
+print("HOST: {}".format(HOST))
+PORT = 9999
 
 # Create a socket (SOCK_STREAM means a TCP socket)
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as sock:
     # Connect to server and send data
     sock.connect((HOST, PORT))
     sock.sendall(pickle.dumps(update))
