@@ -1,5 +1,6 @@
 # Class for the threaded TCP socketserver and associated additions
 import socketserver
+import socket
 import pickle
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -13,11 +14,12 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                 print("No database file exists, loading empty DB.")
                 open("data.pickle", 'w+') # create file
                 self.database = {}
-            except (pickle.PickleError, EOFError) as e:
+            except Exception as e:
                 print(e)
                 print("Error unpickling data!")
             finally:
                 print("Finished loading {} from database.".format(self.database))
+        self.address_family = socket.AF_INET6
         super().__init__(server_address, RequestHandlerClass, bind_and_activate)
 
     def setDB(self, data):
