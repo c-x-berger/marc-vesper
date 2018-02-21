@@ -2,6 +2,7 @@ import nacl.signing
 import pickle
 import util
 
+
 class Update():
     def __init__(self, resource, signature, value, oldres=None):
         self.resource = resource
@@ -10,14 +11,17 @@ class Update():
         self.oldres = oldres
 
     def check_sig(self):
-        sig_key_recv = nacl.signing.VerifyKey(self.resource.key, encoder=nacl.encoding.HexEncoder)
+        sig_key_recv = nacl.signing.VerifyKey(
+            self.resource.key, encoder=nacl.encoding.HexEncoder)
         try:
             util.print_labeled("Verifying data...")
             sig_key_recv.verify(self.sig)
             if (self.oldres != None):
-                util.print_labeled("Signature good for RECIEVED key, checking against SERVER key")
-                sig_key_serv = nacl.signing.VerifyKey(self.oldres["key"], encoder=nacl.encoding.HexEncoder)
-                util.print_labeled(self.oldres["key"])
+                util.print_labeled(
+                    "Signature good for RECIEVED key, checking against SERVER key")
+                sig_key_serv = nacl.signing.VerifyKey(
+                    self.oldres["key"], encoder=nacl.encoding.HexEncoder)
+                util.print_labeled(str(self.oldres["key"], "utf-8"))
                 sig_key_serv.verify(self.sig)
             return True
         except nacl.exceptions.BadSignatureError:
@@ -33,5 +37,6 @@ class Update():
             return True
         else:
             # it doesn't
-            util.print_labeled("Passing due to signature error. No values have been updated.")
+            util.print_labeled(
+                "Passing due to signature error. No values have been updated.")
             return False
