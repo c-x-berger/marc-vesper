@@ -30,6 +30,6 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     
     def server_close(self):
         print("Closing TCP server and saving database")
-        super().server_close()
+        self.socket.close()
         with open("data.pickle", 'w+b') as db:
             pickle.dump(self.database, db)
