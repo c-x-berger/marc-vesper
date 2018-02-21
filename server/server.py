@@ -34,7 +34,6 @@ class TCPHandler(socketserver.BaseRequestHandler):
         util.print_labeled("Decoded pickle into update and resource objects.")
         if (u.update_resource()):
             resources[decoded[0]["label"]] = r.toDict()
-            print(resources)
         self.finish()
 
 
