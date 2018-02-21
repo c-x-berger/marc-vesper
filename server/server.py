@@ -36,6 +36,7 @@ def main(address):
             # Exit the server thread when the main thread terminates
             server_thread.daemon = True
             server_thread.start()
+            resources = r_server.getDB()
             print("Server loop running in thread:", server_thread.name)
             while True:
                 pass # HACK for Ctrl+C interrupt
@@ -45,6 +46,7 @@ def main(address):
             r_server.shutdown()
             r_server.setDB(resources)
             r_server.server_close()
+            print("Server thread terminated. Note that the socket may take some time to unbind.")
             exit(0)
 
 def start():
@@ -52,3 +54,4 @@ def start():
 
 if __name__ == "__main__":
     start()
+
