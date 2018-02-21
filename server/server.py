@@ -1,13 +1,14 @@
 import resource
 import update
 import util
+import database
 import socketserver
 import threading
 import sys
 import pickle
 from threaded_tcp_server import ThreadedTCPServer
 
-resources = {}
+resources = database.Database()
 
 
 class TCPHandler(socketserver.BaseRequestHandler):
@@ -28,12 +29,12 @@ class TCPHandler(socketserver.BaseRequestHandler):
             util.print_labeled(
                 "Malformed dict from {}!".format(self.client_address[0]))
         try:
-            u.oldres = resources[decoded[0]["label"]]
+            u.oldres = resources.get()[decoded[0]["label"]]
         except KeyError:
             util.print_labeled("No old resource found!")
         util.print_labeled("Decoded pickle into update and resource objects.")
         if (u.update_resource()):
-            resources[decoded[0]["label"]] = r.toDict()
+            resources.setItem(decoded[0]["label"], r.toDict())
         self.finish()
 
 
@@ -45,15 +46,14 @@ def main(address):
             # Exit the server thread when the main thread terminates
             server_thread.daemon = True
             server_thread.start()
-            resources = r_server.getDB()
             print("Server loop running in thread:", server_thread.name)
             while True:
                 pass  # HACK for Ctrl+C interrupt
         except KeyboardInterrupt:
             print("\nCaught Ctrl+C")
             print("Shutting down...")
-            print(resources)
-            r_server.setDB(resources)
+        finally:
+            r_server.setDB(resources.get())
             r_server.shutdown()
             r_server.server_close()
             print(
