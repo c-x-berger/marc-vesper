@@ -1,5 +1,6 @@
 import resource
 import update
+import util
 import socketserver, threading, sys, pickle
 from threaded_tcp_server import ThreadedTCPServer
 
@@ -9,23 +10,23 @@ class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         # I CAN HANDLE MYSELF OKAY
         self.data = self.request.recv(1024).strip()
-        print("Processing data from client {} in thread {}".format(
-                self.client_address[0],
-                threading.current_thread().name
-            )
-        )
+        util.print_labeled("Processing data from client {}".format(self.client_address[0]))
         decoded = pickle.loads(self.data)
-        print(decoded)
+        util.print_labeled("recieved key {}".format(decoded[0]["key"]))
         r, u = None, None
         try:
-            r = resource.Resource(decoded[0]["label"], decoded[0]["serial_no"], decoded[0]["key"], None)
-            u = update.Update(r, decoded[1], decoded[0]["value"])
+            r = resource.Resource(decoded[0]["label"], decoded[0]["serial_no"], decoded[0]["key"])
+            u = update.Update(r, decoded[1], decoded[0]["value"], None)
         except KeyError:
             # recieved malformed dict
-            print("Malformed dict from {}!".format(self.client_address[0]))
-        print("Decoded pickle into update object and resource object")
-        u.update_resource()
-        resources[decoded[0]["label"]] = r.toDict()
+            util.print_labeled("Malformed dict from {}!".format(self.client_address[0]))
+        try:
+            u.oldres = resources[decoded[0]["label"]]
+        except KeyError:
+            util.print_labeled("No old resource found!")
+        util.print_labeled("Decoded pickle into update and resource objects.")
+        if (u.update_resource()):
+            resources[decoded[0]["label"]] = r.toDict()
         self.finish()
 
 def main(address):
