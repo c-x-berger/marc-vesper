@@ -24,6 +24,9 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
     def setDB(self, data):
         self.database = data
+        
+    def getDB(self):
+        return self.database
     
     def server_close(self):
         print("Closing TCP server and saving database")
