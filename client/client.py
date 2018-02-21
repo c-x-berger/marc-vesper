@@ -2,14 +2,19 @@ import pickle
 import sys
 import nacl.encoding
 import nacl.signing
-import datetime, socket, random
+import datetime
+import socket
+import random
+
 
 def randomBytes(n):
     return bytes(random.getrandbits(8) for i in range(n))
 
+
 # Generate a new random signing key
 random.seed(sys.argv[2])
-signing_key = nacl.signing.SigningKey(randomBytes(32), nacl.encoding.RawEncoder)
+signing_key = nacl.signing.SigningKey(
+    randomBytes(32), nacl.encoding.RawEncoder)
 
 # Obtain the verify key for a given signing key
 verify_key = signing_key.verify_key
@@ -19,7 +24,8 @@ verify_key_hex = verify_key.encode(encoder=nacl.encoding.HexEncoder)
 
 current_time = datetime.datetime.now(datetime.timezone.utc)
 unix_time = current_time.timestamp()
-update = [{"label": "test.hype", "serial_no": unix_time, "key": verify_key_hex, "value": "fcc3:a9d9:1694:2d:7a61:b5af:95fb:85d6"}, None]
+update = [{"label": "test.hype", "serial_no": unix_time, "key": verify_key_hex,
+           "value": "fcc3:a9d9:1694:2d:7a61:b5af:95fb:85d6"}, None]
 
 pickled_update = pickle.dumps(update[0])
 
