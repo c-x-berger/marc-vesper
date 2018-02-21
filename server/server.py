@@ -1,25 +1,32 @@
 import resource
 import update
 import util
-import socketserver, threading, sys, pickle
+import socketserver
+import threading
+import sys
+import pickle
 from threaded_tcp_server import ThreadedTCPServer
 
 resources = {}
+
 
 class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         # I CAN HANDLE MYSELF OKAY
         self.data = self.request.recv(1024).strip()
-        util.print_labeled("Processing data from client {}".format(self.client_address[0]))
+        util.print_labeled(
+            "Processing data from client {}".format(self.client_address[0]))
         decoded = pickle.loads(self.data)
         util.print_labeled("recieved key {}".format(decoded[0]["key"]))
         r, u = None, None
         try:
-            r = resource.Resource(decoded[0]["label"], decoded[0]["serial_no"], decoded[0]["key"])
+            r = resource.Resource(
+                decoded[0]["label"], decoded[0]["serial_no"], decoded[0]["key"])
             u = update.Update(r, decoded[1], decoded[0]["value"], None)
         except KeyError:
             # recieved malformed dict
-            util.print_labeled("Malformed dict from {}!".format(self.client_address[0]))
+            util.print_labeled(
+                "Malformed dict from {}!".format(self.client_address[0]))
         try:
             u.oldres = resources[decoded[0]["label"]]
         except KeyError:
@@ -27,7 +34,9 @@ class TCPHandler(socketserver.BaseRequestHandler):
         util.print_labeled("Decoded pickle into update and resource objects.")
         if (u.update_resource()):
             resources[decoded[0]["label"]] = r.toDict()
+            print(resources)
         self.finish()
+
 
 def main(address):
     print("Starting socketserver")
@@ -40,19 +49,22 @@ def main(address):
             resources = r_server.getDB()
             print("Server loop running in thread:", server_thread.name)
             while True:
-                pass # HACK for Ctrl+C interrupt
+                pass  # HACK for Ctrl+C interrupt
         except KeyboardInterrupt:
             print("\nCaught Ctrl+C")
             print("Shutting down...")
             r_server.shutdown()
             r_server.setDB(resources)
             r_server.server_close()
-            print("Server thread terminated. Note that the socket may take some time to unbind.")
+            print(
+                "Server thread terminated. Note that the socket may take some time to unbind.")
             exit(0)
 
+
 def start():
-    main(str(sys.argv[1])) # server.start is more natural, this also allows us to make main() more complex
+    # server.start is more natural, this also allows us to make main() more complex
+    main(str(sys.argv[1]))
+
 
 if __name__ == "__main__":
     start()
-
