@@ -2,10 +2,14 @@ import pickle
 import sys
 import nacl.encoding
 import nacl.signing
-import datetime, socket
+import datetime, socket, random
+
+def randomBytes(n):
+    return bytes(random.getrandbits(8) for i in range(n))
 
 # Generate a new random signing key
-signing_key = nacl.signing.SigningKey.generate()
+random.seed(sys.argv[2])
+signing_key = nacl.signing.SigningKey(randomBytes(32), nacl.encoding.RawEncoder)
 
 # Obtain the verify key for a given signing key
 verify_key = signing_key.verify_key
