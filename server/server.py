@@ -52,8 +52,9 @@ def main(address):
         except KeyboardInterrupt:
             print("\nCaught Ctrl+C")
             print("Shutting down...")
-            r_server.shutdown()
+            print(resources)
             r_server.setDB(resources)
+            r_server.shutdown()
             r_server.server_close()
             print(
                 "Server thread terminated. Note that the socket may take some time to unbind.")
