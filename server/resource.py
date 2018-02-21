@@ -7,4 +7,3 @@ class Resource():
 
     def toDict(self):
         return {"key": self.key, "value": self.value, "serial_no": self.serial_no}
-
