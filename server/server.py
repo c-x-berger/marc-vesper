@@ -17,7 +17,13 @@ class TCPHandler(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         util.print_labeled(
             "Processing data from client {}".format(self.client_address[0]))
-        decoded = pickle.loads(self.data)
+        decoded = None
+        try:
+            decoded = pickle.loads(self.data)
+        except EOFError:
+            util.print_labeled("Ran out of input - did the client not send anything?")
+            util.print_labeled("Stopping processing.")
+            self.finish()
         util.print_labeled("recieved key {}".format(decoded[0]["key"]))
         r, u = None, None
         try:
@@ -36,10 +42,13 @@ class TCPHandler(socketserver.BaseRequestHandler):
         if (u.update_resource()):
             resources.setItem(decoded[0]["label"], r.toDict())
         self.finish()
+    def finish(self):
+        super().finish()
+        exit()
 
 
 def main(address):
-    print("Starting socketserver")
+    util.print_labeled("Starting socketserver")
     with ThreadedTCPServer((address, 9999), TCPHandler) as r_server:
         try:
             server_thread = threading.Thread(target=r_server.serve_forever)
