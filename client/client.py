@@ -8,10 +8,13 @@ import random
 import getpass
 import client_util
 
+
 def randomBytes(n):
     return bytes(random.getrandbits(8) for i in range(n))
 
+
 version = "0.0.1"
+
 
 def main():
     print("marc_vesper client version {} starting...".format(version))
@@ -27,9 +30,12 @@ def main():
     with socket.socket(family, socket.SOCK_STREAM) as sock:
         sock.connect((host, port))
         print("Connected to {}/{}!".format(host, port))
-        pass_phrase = getpass.getpass("Please enter your password for {}: ".format(host))
+        pass_phrase = getpass.getpass(
+            "Please enter your password for {}: ".format(host))
         random.seed(pass_phrase)
-        signing_key - nacl.signing.SigningKey(randomBytes(32), nacl.encoding.RawEncoder)
+        signing_key - \
+            nacl.signing.SigningKey(randomBytes(32), nacl.encoding.RawEncoder)
+
 
 if __name__ == "__main__":
     main()
@@ -69,4 +75,3 @@ with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as sock:
 
     # Receive data from the server and shut down
     received = str(sock.recv(1024), "utf-8")
-
