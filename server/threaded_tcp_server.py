@@ -23,7 +23,8 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
             with open("data.pickle", 'w+b') as db:
                 pickle.dump(self.database, db)
         finally:
-            print("[{}] Finished loading {} from database.".format(threading.current_thread().name, self.database))
+            print("[{}] Finished loading {} from database.".format(
+                threading.current_thread().name, self.database))
         self.address_family = socket.AF_INET6
         super().__init__(server_address, RequestHandlerClass, bind_and_activate)
 
