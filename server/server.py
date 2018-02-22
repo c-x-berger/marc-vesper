@@ -5,7 +5,7 @@ import database
 import socketserver
 import threading
 import sys
-import pickle
+import json
 from threaded_tcp_server import ThreadedTCPServer
 
 resources = database.Database()
@@ -17,12 +17,13 @@ class TCPHandler(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         util.print_labeled(
             "Processing data from client {}".format(self.client_address[0]))
+        util.print_labeled("Decoding binary -> string -> list...")
         decoded = None
         try:
-            decoded = pickle.loads(self.data)
-        except EOFError:
-            util.print_labeled(
-                "Ran out of input - did the client not send anything?")
+            decoded = json.loads(self.data)
+            print(decoded)
+        except:
+            util.print_labeled("BAD JSON! BAD! No decoding for you!")
             util.print_labeled("Stopping processing.")
             self.finish()
         util.print_labeled("recieved key {}".format(decoded[0]["key"]))
@@ -39,7 +40,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
             u.oldres = resources.get()[decoded[0]["label"]]
         except KeyError:
             util.print_labeled("No old resource found!")
-        util.print_labeled("Decoded pickle into update and resource objects.")
+        util.print_labeled("Decoded JSON into update and resource objects.")
         if (u.update_resource()):
             resources.setItem(decoded[0]["label"], r.toDict())
         self.finish()
@@ -57,6 +58,7 @@ def main(address):
             # Exit the server thread when the main thread terminates
             server_thread.daemon = True
             server_thread.start()
+            resources.set(r_server.getDB())
             print("Server loop running in thread:", server_thread.name)
             while True:
                 pass  # HACK for Ctrl+C interrupt
