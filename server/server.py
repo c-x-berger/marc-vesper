@@ -21,7 +21,8 @@ class TCPHandler(socketserver.BaseRequestHandler):
         try:
             decoded = pickle.loads(self.data)
         except EOFError:
-            util.print_labeled("Ran out of input - did the client not send anything?")
+            util.print_labeled(
+                "Ran out of input - did the client not send anything?")
             util.print_labeled("Stopping processing.")
             self.finish()
         util.print_labeled("recieved key {}".format(decoded[0]["key"]))
@@ -42,6 +43,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
         if (u.update_resource()):
             resources.setItem(decoded[0]["label"], r.toDict())
         self.finish()
+
     def finish(self):
         super().finish()
         exit()
