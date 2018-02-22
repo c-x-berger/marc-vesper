@@ -12,17 +12,18 @@ class Update():
 
     def check_sig(self):
         sig_key_recv = nacl.signing.VerifyKey(
-            self.resource.key, encoder=nacl.encoding.HexEncoder)
+            self.resource.key, encoder=nacl.encoding.URLSafeBase64Encoder)
         try:
             util.print_labeled("Verifying data...")
-            sig_key_recv.verify(self.sig)
+            sig_key_recv.verify(
+                self.sig, None, nacl.encoding.URLSafeBase64Encoder)
             if (self.oldres != None):
                 util.print_labeled(
                     "Signature good for RECIEVED key, checking against SERVER key")
                 sig_key_serv = nacl.signing.VerifyKey(
-                    self.oldres["key"], encoder=nacl.encoding.HexEncoder)
-                util.print_labeled(str(self.oldres["key"], "utf-8"))
-                sig_key_serv.verify(self.sig)
+                    self.oldres["key"], encoder=nacl.encoding.URLSafeBase64Encoder)
+                util.print_labeled(self.oldres["key"])
+                sig_key_serv.verify(self.sig, None, nacl.encoding.URLSafeBase64Encoder)
             return True
         except nacl.exceptions.BadSignatureError:
             util.print_labeled("Bad signature!")

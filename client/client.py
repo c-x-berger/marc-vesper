@@ -1,4 +1,4 @@
-import pickle
+import json
 import sys
 import nacl.encoding
 import nacl.signing
@@ -37,7 +37,8 @@ def main():
         signing_key = nacl.signing.SigningKey(
             randomBytes(32), nacl.encoding.RawEncoder)
         verify_key = signing_key.verify_key
-        verify_key_hex = verify_key.encode(encoder=nacl.encoding.HexEncoder)
+        verify_key_b64 = str(verify_key.encode(
+            encoder=nacl.encoding.URLSafeBase64Encoder), "utf-8")
         print("(Re)generated signing key and verify key successfully!")
         # label, value, serial number
         label = input("Resource to update (label): ")
@@ -46,12 +47,14 @@ def main():
         unix_time = current_time.timestamp()
         # update "object"
         update = [{"label": label, "serial_no": unix_time,
-                   "key": verify_key_hex, "value": value}, None]
-        pickled_update = pickle.dumps(update[0])
+                   "key": verify_key_b64, "value": value}, None]
+        json_update = json.dumps(update[0])
         # Sign a message with the signing key
-        signed = signing_key.sign(pickled_update)
+        signed = str(signing_key.sign(bytes(json_update, "utf-8"),
+                                      nacl.encoding.URLSafeBase64Encoder), "utf-8")
         update[1] = signed
-        sock.sendall(pickle.dumps(update))
+        print(json.dumps(update))
+        sock.sendall(bytes(json.dumps(update), "utf-8"))
 
 
 if __name__ == "__main__":
