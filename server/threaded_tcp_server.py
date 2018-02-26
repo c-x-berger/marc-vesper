@@ -9,6 +9,7 @@ import util
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
         self.database = None
+        # TODO: implement a better DB format
         util.print_labeled("Loading pickled database...")
         try:
             with open("data.pickle", 'r+b') as db:
