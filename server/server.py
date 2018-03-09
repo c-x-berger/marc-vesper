@@ -1,5 +1,5 @@
-import resource
-import update
+from resource import Resource
+from update import Update
 import util
 import database
 import socketserver
@@ -24,25 +24,29 @@ class TCPHandler(socketserver.BaseRequestHandler):
             print(decoded)
         except:
             util.print_labeled("BAD JSON! BAD! No decoding for you!")
-            util.print_labeled("Stopping processing.")
             self.finish()
         util.print_labeled("recieved key {}".format(decoded[0]["key"]))
+        util.print_labeled("Decoding complete. Processing...")
+        self.as_update(decoded)
+
+    def as_update(self, data):
         r, u = None, None
+        resource_data = data[0]
         try:
-            r = resource.Resource(
-                decoded[0]["label"], decoded[0]["serial_no"], decoded[0]["key"])
-            u = update.Update(r, decoded[1], decoded[0]["value"], None)
+            r = Resource(
+                resource_data["label"], resource_data["serial_no"], resource_data["key"])
+            u = Update(r, data[1], data[0]["value"], None)
         except KeyError:
-            # recieved malformed dict
             util.print_labeled(
                 "Malformed dict from {}!".format(self.client_address[0]))
+        # created resource and update objects, perform update
         try:
-            u.oldres = resources.get()[decoded[0]["label"]]
+            u.oldres = resources.get()[resource_data["label"]]
         except KeyError:
-            util.print_labeled("No old resource found!")
-        util.print_labeled("Decoded JSON into update and resource objects.")
+            util.print_labeled("No old resource found for label {}".format(resource_data["label"]))
+        util.print_labeled("Decoded JSON into update and resource")
         if (u.update_resource()):
-            resources.setItem(decoded[0]["label"], r.toDict())
+            resources.setItem(resource_data["label"], r.toDict())
         self.finish()
 
     def finish(self):
@@ -54,9 +58,9 @@ def main(address, family):
     util.print_labeled("Starting socketserver")
     with ThreadedTCPServer((address, 9999), TCPHandler, True, family) as r_server:
         try:
-            server_thread = threading.Thread(target=r_server.serve_forever)
+            server_thread=threading.Thread(target=r_server.serve_forever)
             # Exit the server thread when the main thread terminates
-            server_thread.daemon = True
+            server_thread.daemon=True
             server_thread.start()
             resources.set(r_server.getDB())
             print("Server loop started in thread:", server_thread.name)
