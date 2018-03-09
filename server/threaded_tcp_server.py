@@ -7,7 +7,7 @@ import util
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-    def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
+    def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True, addr_family=socket.AF_INET):
         self.database = None
         # TODO: implement a better DB format
         util.print_labeled("Loading pickled database...")
@@ -26,7 +26,7 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         finally:
             print("[{}] Finished loading {} from database.".format(
                 threading.current_thread().name, self.database))
-        self.address_family = socket.AF_INET6
+        self.address_family = addr_family
         super().__init__(server_address, RequestHandlerClass, bind_and_activate)
 
     def setDB(self, data):

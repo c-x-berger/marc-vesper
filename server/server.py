@@ -50,16 +50,16 @@ class TCPHandler(socketserver.BaseRequestHandler):
         exit()
 
 
-def main(address):
+def main(address, family):
     util.print_labeled("Starting socketserver")
-    with ThreadedTCPServer((address, 9999), TCPHandler) as r_server:
+    with ThreadedTCPServer((address, 9999), TCPHandler, True, family) as r_server:
         try:
             server_thread = threading.Thread(target=r_server.serve_forever)
             # Exit the server thread when the main thread terminates
             server_thread.daemon = True
             server_thread.start()
             resources.set(r_server.getDB())
-            print("Server loop running in thread:", server_thread.name)
+            print("Server loop started in thread:", server_thread.name)
             while True:
                 pass  # HACK for Ctrl+C interrupt
         except KeyboardInterrupt:
@@ -76,7 +76,9 @@ def main(address):
 
 def start():
     # server.start is more natural, this also allows us to make main() more complex
-    main(str(sys.argv[1]))
+    util.print_labeled("Loading config...")
+    from serverconfig import network_config
+    main(network_config.address, network_config.family)
 
 
 if __name__ == "__main__":
