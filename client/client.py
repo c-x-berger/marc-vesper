@@ -47,7 +47,7 @@ def main():
         unix_time = current_time.timestamp()
         # update "object"
         update = [{"label": label, "serial_no": unix_time,
-                   "key": verify_key_b64, "value": value}, None]
+                   "key": verify_key_b64, "value": value}, None, 100]
         json_update = json.dumps(update[0])
         # Sign a message with the signing key
         signed = str(signing_key.sign(bytes(json_update, "utf-8"),
