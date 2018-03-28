@@ -21,13 +21,15 @@ class TCPHandler(socketserver.BaseRequestHandler):
         decoded = None
         try:
             decoded = json.loads(self.data)
-            print(decoded)
         except:
             util.print_labeled("BAD JSON! BAD! No decoding for you!")
             self.finish()
-        util.print_labeled("recieved key {}".format(decoded[0]["key"]))
         util.print_labeled("Decoding complete. Processing...")
-        self.as_update(decoded)
+        util.print_labeled("Request type {}".format(decoded[2]))
+        if (decoded[2] == 100):
+            self.as_update(decoded)
+        elif (decoded[2] == 200):
+            util.print_labeled("GET request!")
 
     def as_update(self, data):
         r, u = None, None
