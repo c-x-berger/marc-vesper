@@ -15,6 +15,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         # I CAN HANDLE MYSELF OKAY
         self.data = self.request.recv(1024).strip()
+        threading.current_thread().setName("{}:{}".format(self.client_address[0], self.client_address[1]))
         util.print_labeled(
             "Processing data from client {}".format(self.client_address[0]))
         util.print_labeled("Decoding binary -> string -> list...")
