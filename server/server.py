@@ -30,6 +30,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
             self.as_update(decoded)
         elif (decoded[2] == 200):
             util.print_labeled("GET request!")
+            self.handle_get(decoded)
 
     def as_update(self, data):
         r, u = None, None
@@ -51,8 +52,21 @@ class TCPHandler(socketserver.BaseRequestHandler):
             resources.setItem(resource_data["label"], r.toDict())
         self.finish()
 
+    def handle_get(self, data):
+        util.print_labeled("Entered GET handler")
+        reqr_item = None
+        try:
+            reqr_item = {data[0]: resources.getItem(data[0])}
+            util.print_labeled("Got item OK")
+        except KeyError:
+            reqr_item = {data[0]: {'key': '', 'value': '', 'serial_no': 0, 'claimed': False}}
+        finally:
+            self.request.sendall(bytes(json.dumps(reqr_item), "utf-8"))
+            self.finish()
+
     def finish(self):
         super().finish()
+        util.print_labeled("We're done here")
         exit()
 
 
