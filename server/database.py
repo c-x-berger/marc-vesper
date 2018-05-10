@@ -19,3 +19,7 @@ class Database(object):
         with self.lock:
             self.data[key] = data
             print(self.data)
+
+    def getItem(self, key):
+        with self.lock:
+            return self.data[key]
