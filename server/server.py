@@ -15,19 +15,23 @@ class TCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         # I CAN HANDLE MYSELF OKAY
         self.data = self.request.recv(1024).strip()
+        threading.current_thread().setName("{}:{}".format(self.client_address[0], self.client_address[1]))
         util.print_labeled(
             "Processing data from client {}".format(self.client_address[0]))
         util.print_labeled("Decoding binary -> string -> list...")
         decoded = None
         try:
             decoded = json.loads(self.data)
-            print(decoded)
         except:
             util.print_labeled("BAD JSON! BAD! No decoding for you!")
             self.finish()
-        util.print_labeled("recieved key {}".format(decoded[0]["key"]))
         util.print_labeled("Decoding complete. Processing...")
-        self.as_update(decoded)
+        util.print_labeled("Request type {}".format(decoded[2]))
+        if (decoded[2] == 100):
+            self.as_update(decoded)
+        elif (decoded[2] == 200):
+            util.print_labeled("GET request!")
+            self.handle_get(decoded)
 
     def as_update(self, data):
         r, u = None, None
@@ -49,8 +53,21 @@ class TCPHandler(socketserver.BaseRequestHandler):
             resources.setItem(resource_data["label"], r.toDict())
         self.finish()
 
+    def handle_get(self, data):
+        util.print_labeled("Entered GET handler")
+        reqr_item = None
+        try:
+            reqr_item = {data[0]: resources.getItem(data[0])}
+            util.print_labeled("Got item OK")
+        except KeyError:
+            reqr_item = {data[0]: {'key': '', 'value': '', 'serial_no': 0, 'claimed': False}}
+        finally:
+            self.request.sendall(bytes(json.dumps(reqr_item), "utf-8"))
+            self.finish()
+
     def finish(self):
         super().finish()
+        util.print_labeled("We're done here")
         exit()
 
 
