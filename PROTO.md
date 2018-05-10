@@ -98,24 +98,14 @@ The _server_ then responds to the _client_ with a UTF-8 encoded JSON dictionary 
 If the _server_ has data about the _resource_ beyond label, value, and key, it **may** choose to add those values as well. They should be included as key/value pairs in the dictionary (in this case, the `"foo.bar"` dictionary.)
 
 ## Definitions
-<ul>
-    <li>
-        Resource: A piece of information stored by the server, edited by the first *client* to claim it. All resources contain the following:
-        <ul>
-            <li>A label that identifies the resource uniquely from other resources</li>
-            <li>A value to be stored</li>
-            <li>A verifying key to use when checking updates to the resource</li>
-        </ul>
-        Optionally, a resource may contain other data (such as human-readable owner names, last update time, and type of resource.)
-    </li>
-    <li>
-        Client: A computer which connects to a _server_ an makes various kinds of requests (update, get, etc). Not required to store information about any resource or be able to produce information about any _resource_, except when it wishes to change that _resource_.
-    </li>
-    <li>
-        Server: A computer which handles requests from clients as well as other servers for information requests, updates, etc. Required to store or be able to produce the following data for any claimed resource:
-        <ul>
-            <li>The value of that resource</li>
-            <li>The key used for verifying updates to that resource</li>
-        </ul>
-    </li>
-</ul>
+
+* Resource: A piece of information stored by the server, edited by the first _client_ to claim it. All resources contain the following:
+  * A label that identifies the resource uniquely from other resources
+  * A value to be stored
+  * A verifying key to use when checking updates to the resource
+  
+  Optionally, a resource may contain other data (such as human-readable owner names, last update time, and type of resource.)
+* Client: A computer which connects to a _server_ an makes various kinds of requests (update, get, etc). Not required to store information about any resource or be able to produce information about any _resource_, except when it wishes to change that _resource_.
+* Server: A computer which handles requests from _clients_ as well as other _servers_ for information requests, updates, etc. Required to store or be otherwise able to produce the following data for any claimed _resource_:
+  * The value of that resource
+  * The key used for verifying updates to that resource
